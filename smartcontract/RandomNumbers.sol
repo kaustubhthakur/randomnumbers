@@ -12,7 +12,7 @@ contract RandomNumbers {
         uint256 betamount;
         bool verdict;
     }
-    mapping(address => Player) public players;
+    mapping(address => Player) private players;
     uint256 public moneypool;
     uint256 public playerId;
 
@@ -50,12 +50,38 @@ contract RandomNumbers {
     }
 
     function placebet(uint256 _amount) public {
-        require(_amount > 0, "invalid amount");
+        require(_amount >0, "invalid amount");
         players[msg.sender].betamount = _amount;
         players[msg.sender].deposit -= _amount;
         emit BetAmount(_amount, msg.sender, players[msg.sender].playerid);
     }
+function generateNumber(uint256 _number) public {
+    require(players[msg.sender].betamount>0,"place bet first fella");
+    uint256 dx = generateRandomNumber();
+    if(_number==dx)
+    {
+players[msg.sender].deposit += ((players[msg.sender].betamount)+ players[msg.sender].betamount/5);
+players[msg.sender].betamount=0;
+    }
+    else 
+    {
+players[msg.sender].betamount=0;
+    }
+}
+  function getPlayer()
+        public
+        view
+        returns (
+        
+            uint256 deposit,
+            uint256 userId,
+            uint256 betamount,
+            uint256 totalwins,
+            uint256 totallosts
+        )
+    {
+        Player memory player = players[msg.sender];
+        return (player.deposit, player.playerid, player.betamount, player.totalwins,player.totallosts);
+    }
 
-
-    
 }
